@@ -60,15 +60,10 @@ class Utils: NSObject {
         return CLLocation(coordinate: CLLocationCoordinate2D(latitude: lat, longitude: long), altitude: 0, horizontalAccuracy: 0, verticalAccuracy: 0, timestamp: timeStamp as! Date)
     }
     
-
-    
-    
-    static func getSpeed(_ locations:[CLLocation]) -> Int{
+    static func getSpeed(_ locations:[Double]) -> Int{
         var speed:Double = 0
         for location in locations.enumerated() {
-            speed += abs(location.element.speed)
-            print("speed",speed)
-            print(location.element.speed)
+            speed  = speed + location.element
         }
         speed = speed/Double(locations.count)
         speed = speed * 3.6
@@ -93,6 +88,59 @@ class Utils: NSObject {
             return 100
         }
     }
+    
+    static func saveLocationToLocal(_ location: CLLocation,_ desc:String) {
+        let dataDictionary = ["latitude" : location.coordinate.latitude, "longitude" : location.coordinate.longitude,"activity": desc +  "    " + location.description ,"timeStamp" :Utils.currentTimestampWithHours() ] as [String : Any]
+        var dataArray = UserDefaults.standard.array(forKey: "GeoSparkKeyForLatLongInfo")
+        if let _ = dataArray {
+            dataArray?.append(dataDictionary)
+        }else{
+            dataArray = [dataDictionary]
+        }
+        UserDefaults.standard.set(dataArray, forKey: "GeoSparkKeyForLatLongInfo")
+        UserDefaults.standard.synchronize()
+    }
+    
+    static func currentTimestampWithHours() -> String {
+        let dateFormatter : DateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+        let date = Date()
+        return dateFormatter.string(from: date)
+    }
+
+    static func saveSpeed(_ location:CLLocation){
+        let speed = abs(location.speed)
+        var dataArray = UserDefaults.standard.array(forKey: "speed")
+        if let _ = dataArray {
+            dataArray?.insert(location, at: 0)
+        }else{
+            dataArray = [speed]
+        }
+        UserDefaults.standard.set(dataArray, forKey: "speed")
+        UserDefaults.standard.synchronize()
+    }
+    
+    static func getAllSpeed() -> [Double]{
+        let speedArray = UserDefaults.standard.array(forKey: "speed") as? [Double]
+        if speedArray?.count == 0 || speedArray == nil{
+            return []
+        }
+        return speedArray!
+    }
+    
+    static func deleteSpeed(){
+        var dataArray = UserDefaults.standard.array(forKey: "speed")  as? [Double]
+        if dataArray?.count != 0 || dataArray != nil{
+            UserDefaults.standard.set(dataArray?.removeLast(), forKey: "speed")
+            UserDefaults.standard.synchronize()
+        }
+    }
+    
+    static func resetSpeed(){
+        UserDefaults.standard.removeObject(forKey: "speed")
+        UserDefaults.standard.synchronize()
+    }
+    
 }
 
 extension TimeInterval {
