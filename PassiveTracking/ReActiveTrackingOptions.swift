@@ -10,9 +10,9 @@ import UIKit
 import CoreLocation
 
 
-class ActiveTrackingOptions: NSObject{
+class ReActiveTrackingOptions: NSObject{
     
-    static let shareInstance = ActiveTrackingOptions()
+    static let shareInstance = ReActiveTrackingOptions()
     fileprivate var locationManager:CLLocationManager?
     fileprivate var locationHandler: locationStatus?
     
@@ -109,7 +109,7 @@ class ActiveTrackingOptions: NSObject{
     }
 }
 
-extension ActiveTrackingOptions:CLLocationManagerDelegate{
+extension ReActiveTrackingOptions:CLLocationManagerDelegate{
     
     func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
         if status == .authorizedWhenInUse{

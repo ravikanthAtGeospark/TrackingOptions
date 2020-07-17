@@ -32,7 +32,7 @@ class PermissionViewController: UIViewController {
 
     @IBAction func locationAction(_ sender: Any) {
         locationBtn.setTitle("Provide Permission", for: .normal)
-        PassiveTrackingOptions.shareInstance.requestLocationPermission { (status) in
+        ReActiveTrackingOptions.shareInstance.requestLocationPermission { (status) in
             if status != .authorizedAlways{
                 if let url = URL(string:UIApplication.openSettingsURLString)
                 {

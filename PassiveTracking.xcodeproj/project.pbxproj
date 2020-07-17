@@ -19,12 +19,12 @@
 		7B86657D24C0BDD500FCB041 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B86657A24C0BDD500FCB041 /* Utils.swift */; };
 		7B86657E24C0BDD500FCB041 /* UIViewController+Hud.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B86657B24C0BDD500FCB041 /* UIViewController+Hud.swift */; };
 		7B86657F24C0BDD500FCB041 /* HudView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B86657C24C0BDD500FCB041 /* HudView.swift */; };
-		7B86658124C0BEE300FCB041 /* ActiveTrackingOptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B86658024C0BEE300FCB041 /* ActiveTrackingOptions.swift */; };
+		7B86658124C0BEE300FCB041 /* ReActiveTrackingOptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B86658024C0BEE300FCB041 /* ReActiveTrackingOptions.swift */; };
 		7B86658324C0C2E100FCB041 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B86658224C0C2E100FCB041 /* Logger.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		7B86655924C0BC1800FCB041 /* ActiveTracking.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ActiveTracking.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		7B86655924C0BC1800FCB041 /* ReActiveTracking.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ReActiveTracking.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7B86655C24C0BC1800FCB041 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		7B86655E24C0BC1800FCB041 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		7B86656324C0BC1800FCB041 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -38,7 +38,7 @@
 		7B86657A24C0BDD500FCB041 /* Utils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
 		7B86657B24C0BDD500FCB041 /* UIViewController+Hud.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIViewController+Hud.swift"; sourceTree = "<group>"; };
 		7B86657C24C0BDD500FCB041 /* HudView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HudView.swift; sourceTree = "<group>"; };
-		7B86658024C0BEE300FCB041 /* ActiveTrackingOptions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActiveTrackingOptions.swift; sourceTree = "<group>"; };
+		7B86658024C0BEE300FCB041 /* ReActiveTrackingOptions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReActiveTrackingOptions.swift; sourceTree = "<group>"; };
 		7B86658224C0C2E100FCB041 /* Logger.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Logger.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -64,7 +64,7 @@
 		7B86655A24C0BC1800FCB041 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				7B86655924C0BC1800FCB041 /* ActiveTracking.app */,
+				7B86655924C0BC1800FCB041 /* ReActiveTracking.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -80,7 +80,7 @@
 				7B86656524C0BC1A00FCB041 /* Assets.xcassets */,
 				7B86656724C0BC1A00FCB041 /* LaunchScreen.storyboard */,
 				7B86656A24C0BC1A00FCB041 /* Info.plist */,
-				7B86658024C0BEE300FCB041 /* ActiveTrackingOptions.swift */,
+				7B86658024C0BEE300FCB041 /* ReActiveTrackingOptions.swift */,
 			);
 			path = PassiveTracking;
 			sourceTree = "<group>";
@@ -124,7 +124,7 @@
 			);
 			name = PassiveTracking;
 			productName = PassiveTracking;
-			productReference = 7B86655924C0BC1800FCB041 /* ActiveTracking.app */;
+			productReference = 7B86655924C0BC1800FCB041 /* ReActiveTracking.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -184,7 +184,7 @@
 				7B86657224C0BC6D00FCB041 /* PermissionViewController.swift in Sources */,
 				7B86657D24C0BDD500FCB041 /* Utils.swift in Sources */,
 				7B86655D24C0BC1800FCB041 /* AppDelegate.swift in Sources */,
-				7B86658124C0BEE300FCB041 /* ActiveTrackingOptions.swift in Sources */,
+				7B86658124C0BEE300FCB041 /* ReActiveTrackingOptions.swift in Sources */,
 				7B86655F24C0BC1800FCB041 /* SceneDelegate.swift in Sources */,
 				7B86657E24C0BDD500FCB041 /* UIViewController+Hud.swift in Sources */,
 				7B86657624C0BCC800FCB041 /* LogViewController.swift in Sources */,
@@ -340,8 +340,8 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.motion.ActiveTracking;
-				PRODUCT_NAME = ActiveTracking;
+				PRODUCT_BUNDLE_IDENTIFIER = com.motion.ReActiveTracking;
+				PRODUCT_NAME = ReActiveTracking;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
 			};
@@ -359,8 +359,8 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.motion.ActiveTracking;
-				PRODUCT_NAME = ActiveTracking;
+				PRODUCT_BUNDLE_IDENTIFIER = com.motion.ReActiveTracking;
+				PRODUCT_NAME = ReActiveTracking;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
 			};
