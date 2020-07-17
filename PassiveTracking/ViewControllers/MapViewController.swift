@@ -29,11 +29,8 @@ class MapViewController: UIViewController {
         setAnnotations(currentTimestamp())
     }
     
-    @IBAction func selectDateAction(_ sender: Any) {
-    }
     @objc func newlocation(){
         setAnnotations(currentTimestamp())
-
     }
     
     func setAnnotations(_ dateStr:String){

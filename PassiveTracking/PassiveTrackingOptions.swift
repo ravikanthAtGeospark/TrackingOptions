@@ -49,7 +49,7 @@ class PassiveTrackingOptions: NSObject{
     }
     
     func updateLocation(_ location:CLLocation,_ type:String){
-        
+        print("\(type) \(location.description)")
         let radius = getRadius(location)
         Utils.savePDFData(location, type, radius)
         LoggerManager.sharedInstance.writeLocationToFile("\(type) \("    ") \(location.description)")
@@ -104,11 +104,21 @@ class PassiveTrackingOptions: NSObject{
     }
     
     func createGeofence(_ location:CLLocation,_ speed:Int){
+        clearRegions()
         let region = CLCircularRegion(center: location.coordinate, radius: CLLocationDistance(speed), identifier: "geofenceRadius")
         region.notifyOnExit = true
         LoggerManager.sharedInstance.writeLocationToFile("Geofence create \(region.description)")
+        print("createGeofence \(region.description)")
         locationManager?.startMonitoring(for: region)
     }
+    
+    fileprivate func clearRegions() {
+        locationManager!.monitoredRegions.forEach { region in
+            LoggerManager.sharedInstance.writeLocationToFile("clearRegions  \(region.description)")
+            locationManager!.stopMonitoring(for: region)
+        }
+    }
+
 }
 
 extension PassiveTrackingOptions:CLLocationManagerDelegate{
@@ -126,7 +136,9 @@ extension PassiveTrackingOptions:CLLocationManagerDelegate{
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         guard let location = locations.max(by: { (location1, location2) -> Bool in
             return location1.timestamp.timeIntervalSince1970 < location2.timestamp.timeIntervalSince1970}) else { return }
-        self.updateLocation(location,"SignificantLocation")
+        if location.horizontalAccuracy <= 100{
+            self.updateLocation(location,"SignificantLocation")
+        }
     }
     
     func locationManager(_ manager: CLLocationManager, didVisit visit: CLVisit) {

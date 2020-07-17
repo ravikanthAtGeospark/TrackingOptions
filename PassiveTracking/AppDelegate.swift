@@ -19,9 +19,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
     
-        if CLLocationManager.authorizationStatus().rawValue == 3 {
-            PassiveTrackingOptions.shareInstance.startTracking()
-        }
+        PassiveTrackingOptions.shareInstance.startTracking()
 
         center.requestAuthorization(options: [.alert, .sound]) { granted, error in
         }
