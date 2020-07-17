@@ -34,12 +34,15 @@ class ReActiveTrackingOptions: NSObject{
     
     func startTracking(){
         setDelegate()
-        locationManager!.delegate = self
+        locationManager?.delegate = self
+        locationManager?.desiredAccuracy = kCLLocationAccuracyHundredMeters
+        locationManager?.distanceFilter = 50
         locationManager?.allowsBackgroundLocationUpdates = true
-        locationManager?.pausesLocationUpdatesAutomatically = false
-        locationManager?.startMonitoringVisits()
+        locationManager?.pausesLocationUpdatesAutomatically = true
         locationManager?.startMonitoringSignificantLocationChanges()
-        
+        locationManager?.startMonitoringVisits()
+        locationManager?.startUpdatingLocation()
+
     }
     
     func stopTracking(){
@@ -55,7 +58,7 @@ class ReActiveTrackingOptions: NSObject{
         LoggerManager.sharedInstance.writeLocationToFile("\(type) \("    ") \(location.description)")
         Utils.saveLocationToLocal(location, type)
         AppDelegate().showNotification(location, type)
-        
+        updateLocationManager(radius)
         createGeofence(location, radius)
         
         
@@ -107,6 +110,35 @@ class ReActiveTrackingOptions: NSObject{
         let region = CLCircularRegion(center: location.coordinate, radius: CLLocationDistance(speed), identifier: "geofenceRadius")
         locationManager?.startMonitoring(for: region)
     }
+    
+    func updateLocationManager(_ speed:Int ){
+        if speed == 50 {
+            locationManager?.distanceFilter = 50
+            locationManager?.desiredAccuracy = kCLLocationAccuracyHundredMeters
+        }else if speed == 100 {
+            locationManager?.distanceFilter = 100
+            locationManager?.desiredAccuracy = kCLLocationAccuracyHundredMeters
+        }else if speed == 200 {
+            locationManager?.distanceFilter = 200
+            locationManager?.desiredAccuracy = kCLLocationAccuracyHundredMeters
+        }else if speed == 400 {
+            locationManager?.distanceFilter = 400
+            locationManager?.desiredAccuracy = kCLLocationAccuracyHundredMeters
+        }else if speed == 800 {
+            locationManager?.distanceFilter = 800
+            locationManager?.desiredAccuracy = kCLLocationAccuracyHundredMeters
+        }else if speed == 1200 {
+            locationManager?.distanceFilter = 1200
+            locationManager?.desiredAccuracy = kCLLocationAccuracyKilometer
+        }else if speed == 1800 {
+            locationManager?.distanceFilter = 1800
+            locationManager?.desiredAccuracy = kCLLocationAccuracyKilometer
+        }else{
+            locationManager?.distanceFilter = 50
+            locationManager?.desiredAccuracy = kCLLocationAccuracyHundredMeters
+        }
+    }
+
 }
 
 extension ReActiveTrackingOptions:CLLocationManagerDelegate{
@@ -125,7 +157,9 @@ extension ReActiveTrackingOptions:CLLocationManagerDelegate{
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         guard let location = locations.max(by: { (location1, location2) -> Bool in
             return location1.timestamp.timeIntervalSince1970 < location2.timestamp.timeIntervalSince1970}) else { return }
-        self.updateLocation(location,"SignificantLocation")
+        if location.horizontalAccuracy <= 100{
+            self.updateLocation(location,"SignificantLocation")
+        }
     }
     
     func locationManager(_ manager: CLLocationManager, didVisit visit: CLVisit) {
