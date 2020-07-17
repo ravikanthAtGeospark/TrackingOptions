@@ -105,6 +105,8 @@ class PassiveTrackingOptions: NSObject{
     
     func createGeofence(_ location:CLLocation,_ speed:Int){
         let region = CLCircularRegion(center: location.coordinate, radius: CLLocationDistance(speed), identifier: "geofenceRadius")
+        region.notifyOnExit = true
+        LoggerManager.sharedInstance.writeLocationToFile("Geofence create \(region.description)")
         locationManager?.startMonitoring(for: region)
     }
 }
@@ -119,7 +121,6 @@ extension PassiveTrackingOptions:CLLocationManagerDelegate{
     
     func locationManager(_ manager: CLLocationManager, didExitRegion region: CLRegion) {
         self.updateLocation(manager.location!,"ExitRegion")
-        
     }
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
