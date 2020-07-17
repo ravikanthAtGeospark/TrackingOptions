@@ -51,6 +51,7 @@ class PassiveTrackingOptions: NSObject{
     func updateLocation(_ location:CLLocation,_ type:String){
         print("\(type) \(location.description)")
         let radius = getRadius(location)
+        Utils.saveLastLcoation(location)
         Utils.savePDFData(location, type, radius)
         LoggerManager.sharedInstance.writeLocationToFile("\(type) \("    ") \(location.description)")
         Utils.saveLocationToLocal(location, type)
