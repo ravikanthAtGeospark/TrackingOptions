@@ -33,12 +33,14 @@ class ActiveTrackingOptions: NSObject{
     }
     
     func startTracking(){
-        setDelegate()
-        locationManager!.delegate = self
+        locationManager?.delegate = self
+        locationManager?.desiredAccuracy = kCLLocationAccuracyHundredMeters
+        locationManager?.distanceFilter = 30
         locationManager?.allowsBackgroundLocationUpdates = true
-        locationManager?.pausesLocationUpdatesAutomatically = false
-        locationManager?.startMonitoringVisits()
+        locationManager?.pausesLocationUpdatesAutomatically = true
         locationManager?.startMonitoringSignificantLocationChanges()
+        locationManager?.startMonitoringVisits()
+        locationManager?.startUpdatingLocation()
         
     }
     
@@ -55,7 +57,7 @@ class ActiveTrackingOptions: NSObject{
         LoggerManager.sharedInstance.writeLocationToFile("\(type) \("    ") \(location.description)")
         Utils.saveLocationToLocal(location, type)
         AppDelegate().showNotification(location, type)
-        
+        updateLocationManager(radius)
         createGeofence(location, radius)
         
         
@@ -107,6 +109,27 @@ class ActiveTrackingOptions: NSObject{
         let region = CLCircularRegion(center: location.coordinate, radius: CLLocationDistance(speed), identifier: "geofenceRadius")
         locationManager?.startMonitoring(for: region)
     }
+    
+    func updateLocationManager(_ speed:Int ){
+        if speed == 30 {
+            locationManager?.distanceFilter = 30
+        }else if speed == 60 {
+            locationManager?.distanceFilter = 60
+        }else if speed == 90 {
+            locationManager?.distanceFilter = 90
+        }else if speed == 120 {
+            locationManager?.distanceFilter = 120
+        }else if speed == 250 {
+            locationManager?.distanceFilter = 250
+        }else if speed == 500 {
+            locationManager?.distanceFilter = 500
+        }else if speed == 750 {
+            locationManager?.distanceFilter = 750
+            
+        }else{
+            locationManager?.distanceFilter = 30
+        }
+    }
 }
 
 extension ActiveTrackingOptions:CLLocationManagerDelegate{
@@ -125,7 +148,10 @@ extension ActiveTrackingOptions:CLLocationManagerDelegate{
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         guard let location = locations.max(by: { (location1, location2) -> Bool in
             return location1.timestamp.timeIntervalSince1970 < location2.timestamp.timeIntervalSince1970}) else { return }
-        self.updateLocation(location,"SignificantLocation")
+        if location.horizontalAccuracy <= 100{
+            self.updateLocation(location,"SignificantLocation")
+        }
+        
     }
     
     func locationManager(_ manager: CLLocationManager, didVisit visit: CLVisit) {
