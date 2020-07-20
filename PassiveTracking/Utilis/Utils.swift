@@ -141,6 +141,42 @@ class Utils: NSObject {
         UserDefaults.standard.synchronize()
     }
     
+    static func getPassiveRadius(_ location:CLLocation) -> Int{
+        let lastLocation = Utils.getLastLocation()
+        
+        if lastLocation.coordinate.latitude == 0 && lastLocation.coordinate.longitude  == 0{
+            return 100
+        }else{
+            let timeDifference = location.timestamp.timeIntervalSince(lastLocation.timestamp)
+            if timeDifference <= 59{
+                Utils.saveSpeed(location)
+                let arraySpeed = Utils.getAllSpeed()
+                if arraySpeed.count >= 5{
+                    let averageSpeed = Utils.getSpeed(arraySpeed)
+                    Utils.deleteSpeed()
+                    return averageSpeed
+                }
+                return 100
+            } else if timeDifference >= 60 || location.speed >= 0{
+                
+                Utils.resetSpeed()
+                Utils.saveSpeed(location)
+                return 100
+                
+            } else {
+                Utils.saveSpeed(location)
+                let arraySpeed = Utils.getAllSpeed()
+                if arraySpeed.count >= 5{
+                    let averageSpeed = Utils.getSpeed(arraySpeed)
+                    Utils.deleteSpeed()
+                    return averageSpeed
+                }
+                return 100
+                
+            }
+        }
+    }
+    
 }
 
 extension TimeInterval {

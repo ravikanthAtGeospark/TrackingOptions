@@ -1,27 +1,32 @@
+
 //
-//  PassiveTrackingOptions.swift
-//  PassiveTracking
+//  MotionPassiveTracking.swift
+//  Motion
 //
-//  Created by GeoSpark Mac 15 on 16/07/20.
-//  Copyright © 2020 GeoSpark. All rights reserved.
+//  Created by GeoSpark Mac 15 on 14/07/20.
 //
 
 import UIKit
 import CoreLocation
 
-
-class PassiveTrackingOptions: NSObject{
+internal class PassiveTrackingOptions: NSObject,CLLocationManagerDelegate {
     
     static let shareInstance = PassiveTrackingOptions()
-    fileprivate var locationManager:CLLocationManager?
+    var locationManager:CLLocationManager?
+    
     fileprivate var locationHandler: locationStatus?
     
+    required override init () {
+        super.init()
+        self.setDelegate()
+    }
+    
     fileprivate func setDelegate(){
-        if locationManager == nil{
-            locationManager = CLLocationManager()
+        if self.locationManager == nil {
+            self.locationManager = CLLocationManager()
         }
-        if locationManager?.delegate == nil {
-            locationManager?.delegate = self
+        if self.locationManager!.delegate == nil {
+            self.locationManager!.delegate = self
         }
     }
     
@@ -35,120 +40,77 @@ class PassiveTrackingOptions: NSObject{
     func startTracking(){
         setDelegate()
         locationManager!.delegate = self
-        locationManager?.allowsBackgroundLocationUpdates = true
-        locationManager?.pausesLocationUpdatesAutomatically = false
-        locationManager?.startMonitoringVisits()
-        locationManager?.startMonitoringSignificantLocationChanges()
-        
+        locationManager!.allowsBackgroundLocationUpdates = true
+        locationManager!.pausesLocationUpdatesAutomatically = false
+        locationManager!.startMonitoringVisits()
+        locationManager!.startMonitoringSignificantLocationChanges()
     }
-    
     func stopTracking(){
-        locationManager?.stopUpdatingLocation()
         locationManager?.stopMonitoringVisits()
         locationManager?.stopMonitoringSignificantLocationChanges()
+        locationManager?.stopUpdatingLocation()
+        locationManager?.delegate = nil
+        locationManager = nil
     }
     
-    func updateLocation(_ location:CLLocation,_ type:String){
-        print("\(type) \(location.description)")
-        let radius = getRadius(location)
-        Utils.saveLastLcoation(location)
-        Utils.savePDFData(location, type, radius)
-        LoggerManager.sharedInstance.writeLocationToFile("\(type) \("    ") \(location.description)")
-        Utils.saveLocationToLocal(location, type)
-        AppDelegate().showNotification(location, type)
-        
-        createGeofence(location, radius)
-        
-        
-        NotificationCenter.default.post(name: .newLocationSaved, object: nil)
-    }
-    
-    func getRadius(_ location:CLLocation) -> Int{
-        let radius = Utils.getLastLocation()
-        if radius.coordinate.latitude == 0 && radius.coordinate.longitude == 0{
-            return 100
-        }else{
-            let timeDifference = location.timestamp.timeIntervalSince(radius.timestamp)
-            if timeDifference <= 59{
-                Utils.saveSpeed(location)
-                let countValue = Utils.getAllSpeed()
-                if countValue.count >= 5{
-                    let rad = Utils.getSpeed(countValue)
-                    Utils.deleteSpeed()
-                    return rad
-                }
-                return 100
-            }
-            else if timeDifference >= 60 {
-                Utils.resetSpeed()
-                Utils.saveSpeed(location)
-                return 100
-                
-            }
-            else if location.speed >= 0{
-                Utils.resetSpeed()
-                Utils.saveSpeed(location)
-                return 100
-            }
-            else{
-                Utils.saveSpeed(location)
-                let countValue = Utils.getAllSpeed()
-                if countValue.count >= 5{
-                    let rad = Utils.getSpeed(countValue)
-                    Utils.deleteSpeed()
-                    return rad
-                }
-                
-                return 100
-            }
-        }
-    }
-    
-    func createGeofence(_ location:CLLocation,_ speed:Int){
-        clearRegions()
-        let region = CLCircularRegion(center: location.coordinate, radius: CLLocationDistance(speed), identifier: "geofenceRadius")
+    fileprivate func singleGoefence(_ location:CLLocation, _ radius:CLLocationDistance){
+        clearGeofence()
+        let region = CLCircularRegion(center: location.coordinate, radius: radius, identifier: "KGeofenceRegionIdentifier")
         region.notifyOnExit = true
-        LoggerManager.sharedInstance.writeLocationToFile("Geofence create \(region.description)")
-        print("createGeofence \(region.description)")
         locationManager?.startMonitoring(for: region)
     }
     
-    fileprivate func clearRegions() {
+    fileprivate func clearGeofence(){
         locationManager!.monitoredRegions.forEach { region in
-            LoggerManager.sharedInstance.writeLocationToFile("clearRegions  \(region.description)")
             locationManager!.stopMonitoring(for: region)
         }
     }
-
+    
+    fileprivate func updateLocation(_ location:CLLocation, _ activity:String){
+        print("\(activity) \(location.description)")
+        let radius = Utils.getPassiveRadius(location)
+        Utils.saveLastLcoation(location)
+        Utils.savePDFData(location, activity, radius)
+        LoggerManager.sharedInstance.writeLocationToFile("\(activity) \("    ") \(location.description)")
+        Utils.saveLocationToLocal(location, activity)
+        AppDelegate().showNotification(location, activity)
+        self.singleGoefence(location, CLLocationDistance(radius))
+        
+        
+        NotificationCenter.default.post(name: .newLocationSaved, object: nil)
+        
+    }
+    
 }
 
-extension PassiveTrackingOptions:CLLocationManagerDelegate{
+extension PassiveTrackingOptions{
     
-    func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
-        if status == .authorizedWhenInUse{
-            locationHandler!!(status)
-        }
+    func locationManager(_ manager: CLLocationManager, didVisit visit: CLVisit) {
+        self.updateLocation(manager.location!, "Visit")
+        print("MotionPassiveTracking didVisit")
     }
     
     func locationManager(_ manager: CLLocationManager, didExitRegion region: CLRegion) {
-        self.updateLocation(manager.location!,"ExitRegion")
+        self.updateLocation(manager.location!, "ExitRegion")
+        print("MotionPassiveTracking didExitRegion")
+        
+    }
+    
+    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
+        print(error.localizedDescription)
     }
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         guard let location = locations.max(by: { (location1, location2) -> Bool in
             return location1.timestamp.timeIntervalSince1970 < location2.timestamp.timeIntervalSince1970}) else { return }
-        if location.horizontalAccuracy <= 100{
-            self.updateLocation(location,"SignificantLocation")
+        self.updateLocation(location, "SignificantLocation")
+        print("MotionPassiveTracking didUpdateLocations")
+    }
+    
+    func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
+        if status == .authorizedWhenInUse{
+            locationHandler!!(status)
         }
-    }
-    
-    func locationManager(_ manager: CLLocationManager, didVisit visit: CLVisit) {
-        self.updateLocation(manager.location!,"didVisit")
-        
-    }
-    
-    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
-        LoggerManager.sharedInstance.writeLocationToFile("Did fail error \(error.localizedDescription)")
     }
     
 }
