@@ -33,6 +33,7 @@ class ActiveTrackingOptions: NSObject{
     }
     
     func startTracking(){
+        setDelegate()
         locationManager?.delegate = self
         locationManager?.desiredAccuracy = kCLLocationAccuracyHundredMeters
         locationManager?.distanceFilter = 30
@@ -148,6 +149,7 @@ extension ActiveTrackingOptions:CLLocationManagerDelegate{
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         guard let location = locations.max(by: { (location1, location2) -> Bool in
             return location1.timestamp.timeIntervalSince1970 < location2.timestamp.timeIntervalSince1970}) else { return }
+        print("didUpdateLocations")
         if location.horizontalAccuracy <= 100{
             self.updateLocation(location,"SignificantLocation")
         }
