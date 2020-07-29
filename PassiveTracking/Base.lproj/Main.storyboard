@@ -10,7 +10,7 @@
         <!--Logs-->
         <scene sceneID="vat-JY-QQP">
             <objects>
-                <viewController id="SVk-dD-8bo" customClass="LogViewController" customModule="Tracking_Options" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="SVk-dD-8bo" customClass="LogViewController" customModule="PassiveTracking" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="d17-eX-RLj">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -90,7 +90,7 @@
         <!--Map-->
         <scene sceneID="1Uj-67-vhk">
             <objects>
-                <viewController useStoryboardIdentifierAsRestorationIdentifier="YES" id="zIz-k2-URq" customClass="MapViewController" customModule="Tracking_Options" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController useStoryboardIdentifierAsRestorationIdentifier="YES" id="zIz-k2-URq" customClass="MapViewController" customModule="PassiveTracking" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="I2i-MB-w7A">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -123,7 +123,7 @@
         <!--Home View Controller-->
         <scene sceneID="hbD-Gt-aW6">
             <objects>
-                <tabBarController storyboardIdentifier="HomeViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="vxV-Tf-5jq" customClass="HomeViewController" customModule="Tracking_Options" customModuleProvider="target" sceneMemberID="viewController">
+                <tabBarController storyboardIdentifier="HomeViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="vxV-Tf-5jq" customClass="HomeViewController" customModule="PassiveTracking" customModuleProvider="target" sceneMemberID="viewController">
                     <tabBar key="tabBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="ejr-cS-nSp">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="49"/>
                         <autoresizingMask key="autoresizingMask"/>
@@ -141,7 +141,7 @@
         <!--Permission View Controller-->
         <scene sceneID="PVN-wz-rw2">
             <objects>
-                <viewController storyboardIdentifier="PermissionViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="K5t-J9-0oc" customClass="PermissionViewController" customModule="Tracking_Options" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="PermissionViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="K5t-J9-0oc" customClass="PermissionViewController" customModule="PassiveTracking" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="rBN-VD-SVB">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -155,7 +155,7 @@
                                     <constraint firstAttribute="height" constant="40" id="GRg-5c-Xet"/>
                                 </constraints>
                                 <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="25"/>
-                                <state key="normal" title="Request location"/>
+                                <state key="normal" title="Provide Permission"/>
                                 <connections>
                                     <action selector="locationAction:" destination="K5t-J9-0oc" eventType="touchUpInside" id="LN4-LV-xSP"/>
                                 </connections>

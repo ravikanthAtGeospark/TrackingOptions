@@ -177,6 +177,16 @@ class Utils: NSObject {
         }
     }
     
+    static func distanceBetween(_ location:CLLocation) -> Bool{
+        
+        let lastLocation = getLastLocation()
+        if lastLocation.coordinate.latitude == 0 && lastLocation.coordinate.longitude == 0{
+            return true
+        }else{
+            let distance = location.distance(from: lastLocation)
+            return distance > 150
+        }
+    }
 }
 
 extension TimeInterval {
