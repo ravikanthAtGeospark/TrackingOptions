@@ -109,7 +109,7 @@ class Utils: NSObject {
     }
 
     static func saveSpeed(_ location:CLLocation){
-        let speed = abs(location.speed)
+        let speed = speedCalculate(location)
         var dataArray = UserDefaults.standard.array(forKey: "speed")
         if let _ = dataArray {
             dataArray?.insert(location, at: 0)
@@ -184,8 +184,30 @@ class Utils: NSObject {
             return true
         }else{
             let distance = location.distance(from: lastLocation)
-            return distance > 150
+            return distance > 50
         }
+    }
+    
+    static func speedCalculate(_ currentLocation:CLLocation) -> Double{
+        let lastLocation = getLastLocation()
+        var speed:Double?
+        if lastLocation == currentLocation {
+            speed = 0.0
+        }else if lastLocation.coordinate.latitude == 0.0 {
+            speed = 0.0
+        }
+        else {
+            var currentSpeed = lastLocation.distance(from: currentLocation) / (currentLocation.timestamp.timeIntervalSince(lastLocation.timestamp))
+            if currentSpeed.isNaN == true {
+                speed = 0.0
+                currentSpeed = 0.0
+            } else if currentSpeed < 0{
+                speed = 0.0
+                currentSpeed = 0.0
+            }
+            speed = currentSpeed.roundToInt()
+        }
+        return speed!
     }
 }
 
@@ -221,5 +243,16 @@ extension Date {
     
     var iso8601: String {
         return Date.iso8601Formatter.string(from: self)
+    }
+}
+extension Double{
+    func roundToInt() -> Double{
+        let value = Double(self)
+        let f = self - Double(value)
+        if f < 0.5{
+            return value
+        } else {
+            return value + 1.0
+        }
     }
 }

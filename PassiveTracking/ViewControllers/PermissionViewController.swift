@@ -29,15 +29,12 @@ class PermissionViewController: UIViewController {
             Utils.moveHome()
         }
     }
-
+    
     @IBAction func locationAction(_ sender: Any) {
-        locationBtn.setTitle("Provide Permission", for: .normal)
-        PassiveTrackingOptions.shareInstance.requestLocationPermission { (status) in
-            if status != .authorizedAlways{
-                if let url = URL(string:UIApplication.openSettingsURLString)
-                {
-                    UIApplication.shared.open(url, options: [:], completionHandler: nil)
-                }
+        if CLAuthorizationStatus.authorizedWhenInUse == .authorizedWhenInUse{
+            if let url = URL(string:UIApplication.openSettingsURLString)
+            {
+                UIApplication.shared.open(url, options: [:], completionHandler: nil)
             }
         }
     }

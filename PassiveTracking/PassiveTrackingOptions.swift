@@ -14,12 +14,14 @@ internal class PassiveTrackingOptions: NSObject,CLLocationManagerDelegate {
     static let shareInstance = PassiveTrackingOptions()
     var locationManager:CLLocationManager?
     fileprivate var currentBGTask: UIBackgroundTaskIdentifier?
-
+    let KGeofenceRegionIdentifier = "KGeofenceRegionIdentifier"
     fileprivate var locationHandler: locationStatus?
     
     required override init () {
         super.init()
         self.setDelegate()
+        NotificationCenter.default.addObserver(self, selector: #selector(applicationDidEnterBackground), name: UIApplication.didEnterBackgroundNotification, object: nil)
+
     }
     
     fileprivate func setDelegate(){
@@ -34,7 +36,7 @@ internal class PassiveTrackingOptions: NSObject,CLLocationManagerDelegate {
     func requestLocationPermission(_ handler:locationStatus){
         setDelegate()
         locationManager?.delegate = self
-        locationManager?.requestWhenInUseAuthorization()
+        locationManager?.requestAlwaysAuthorization()
         locationHandler = handler
     }
     
@@ -52,10 +54,10 @@ internal class PassiveTrackingOptions: NSObject,CLLocationManagerDelegate {
         locationManager?.pausesLocationUpdatesAutomatically = false
         locationManager?.delegate = self
         locationManager?.distanceFilter = 500
+        locationManager?.requestAlwaysAuthorization()
         locationManager?.startMonitoringVisits()
-        locationManager?.startMonitoringSignificantLocationChanges()
-    
-        LoggerManager.sharedInstance.writeLocationToFile("startTracking \(locationManager?.description)")
+        locationManager?.requestLocation()
+        LoggerManager.sharedInstance.writeLocationToFile("startTracking \(String(describing: locationManager?.description))")
     }
     func stopTracking(){
         locationManager?.stopMonitoringVisits()
@@ -69,7 +71,7 @@ internal class PassiveTrackingOptions: NSObject,CLLocationManagerDelegate {
         LoggerManager.sharedInstance.writeLocationToFile("Create  geofence")
 
         clearGeofence()
-        let region = CLCircularRegion(center: location.coordinate, radius: 100, identifier: "KGeofenceRegionIdentifier")
+        let region = CLCircularRegion(center: location.coordinate, radius: 100, identifier: geofenceIdentifier())
         region.notifyOnExit = true
         region.notifyOnEntry = true
         LoggerManager.sharedInstance.writeLocationToFile("\(region.description)")
@@ -79,26 +81,45 @@ internal class PassiveTrackingOptions: NSObject,CLLocationManagerDelegate {
     fileprivate func clearGeofence(){
         LoggerManager.sharedInstance.writeLocationToFile("clearGeofence")
         locationManager!.monitoredRegions.forEach { region in
-            locationManager!.stopMonitoring(for: region)
-        }
+            if region.identifier.hasPrefix(geofenceIdentifier()){
+                locationManager?.stopMonitoring(for: region)
+            }
+         }
     }
     
     fileprivate func updateLocation(_ location:CLLocation, _ activity:String){
-        self.singleGoefence(location, 100)
 
-        print("\(activity) \(location.description)")
-        let radius = Utils.getPassiveRadius(location)
-        Utils.saveLastLcoation(location)
-        Utils.savePDFData(location, activity, radius)
-        LoggerManager.sharedInstance.writeLocationToFile("\(activity) \("    ") \(location.description)")
-        Utils.saveLocationToLocal(location, activity)
-        AppDelegate().showNotification(location, activity)
-        
-        
-        NotificationCenter.default.post(name: .newLocationSaved, object: nil)
-        
+//        if Utils.distanceBetween(location){
+            print("\(activity) \(location.description)")
+            let radius = Utils.getPassiveRadius(location)
+            self.singleGoefence(location, CLLocationDistance(radius))
+            Utils.saveLastLcoation(location)
+            Utils.savePDFData(location, activity, radius)
+            LoggerManager.sharedInstance.writeLocationToFile("\(activity) \("    ") \(location.description)")
+            Utils.saveLocationToLocal(location, activity)
+            AppDelegate().showNotification(location, activity)
+            
+            
+            NotificationCenter.default.post(name: .newLocationSaved, object: nil)
+//        }
     }
     
+    @objc fileprivate func applicationDidEnterBackground(_ notification: NSNotification) {
+        let lastLocation = Utils.getLastLocation()
+        if lastLocation.coordinate.latitude != 0 && lastLocation.coordinate.longitude != 0{
+            let region = CLCircularRegion(center: lastLocation.coordinate, radius: 100, identifier: geofenceIdentifier())
+            region.notifyOnExit = true
+            LoggerManager.sharedInstance.writeLocationToFile("\(region.description)")
+            locationManager?.startMonitoring(for: region)
+        }
+        setDelegate()
+        locationManager?.startMonitoringSignificantLocationChanges()
+    }
+    
+    fileprivate func geofenceIdentifier() -> String{
+        return KGeofenceRegionIdentifier + UUID().uuidString
+    }
+
 }
 
 extension PassiveTrackingOptions{
@@ -117,7 +138,10 @@ extension PassiveTrackingOptions{
     }
     
     func locationManager(_ manager: CLLocationManager, didEnterRegion region: CLRegion) {
-        self.updateLocation(manager.location!, "DidEnter")
+        if manager.location?.coordinate.latitude != 0 && manager.location?.coordinate.longitude != 0{
+            let radius = Utils.getPassiveRadius(manager.location!)
+            singleGoefence(manager.location!, CLLocationDistance(radius))
+        }
         LoggerManager.sharedInstance.writeLocationToFile("didEnterRegion")
         print("MotionPassiveTracking DidEnter")
     }
@@ -130,9 +154,9 @@ extension PassiveTrackingOptions{
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         guard let location = locations.max(by: { (location1, location2) -> Bool in
             return location1.timestamp.timeIntervalSince1970 < location2.timestamp.timeIntervalSince1970}) else { return }
-        self.updateLocation(location, "SignificantLocation")
-        print("MotionPassiveTracking didUpdateLocations")
-        LoggerManager.sharedInstance.writeLocationToFile("SignificantLocation")
+            self.updateLocation(location, "SignificantLocation")
+            print("MotionPassiveTracking didUpdateLocations")
+            LoggerManager.sharedInstance.writeLocationToFile("SignificantLocation")
     }
     
     func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {

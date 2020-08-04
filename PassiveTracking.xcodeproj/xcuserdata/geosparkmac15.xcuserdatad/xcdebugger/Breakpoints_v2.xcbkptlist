@@ -7,16 +7,16 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "A8BC6588-F702-4B0A-9578-D6A01139C30B"
-            shouldBeEnabled = "Yes"
+            uuid = "E5FE4660-D2DB-4E01-8096-F5887AAAABF3"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "PassiveTracking/Utilis/Utils.swift"
+            filePath = "PassiveTracking/PassiveTrackingOptions.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "182"
-            endingLineNumber = "182"
-            landmarkName = "distanceBetween(_:)"
+            startingLineNumber = "92"
+            endingLineNumber = "92"
+            landmarkName = "updateLocation(_:_:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
